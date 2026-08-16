@@ -10,6 +10,17 @@ directory gets a snapshot of each once the device is next reachable:
 | `gamecontrollerdb.txt` | `/mnt/sdcard/.system/h700/ppsspp/assets/gamecontrollerdb.txt` | official entry for GUID `19000000010000000100000000010000`: `a:b1,b:b0,x:b2,y:b3,...` (SDL 2.0.12 gamepad-order indices) |
 | `lib/` | `/mnt/sdcard/Emus/h700/PSP.pak/lib/` | libSDL2-2.0.so.0 (2.0.12), libudev.so.1 (built from `src/fakeudev.c`), libudev.so.1.7.2 (real), libasound.so.2 |
 
+The three stock artifacts are **not in this repo** — extract them from the
+official firmware (rootfs `/usr/lib/libSDL2-2.0.so.0.12.0` + libasound, and
+a host `libudev.so.1.7.2`), or copy the whole dir from the device's
+`PSP.pak/lib/`. Name them by soname in a `vendor/` dir so
+`scripts/deploy.sh vendor/` picks them up.
+
+三个官方固件产物**不在本仓库**——从官方固件 rootfs 提取（`/usr/lib/`
+下的 SDL 2.0.12、libasound 和宿主机的 libudev.so.1.7.2），或直接从设备的
+`PSP.pak/lib/` 整目录拷出，按 soname 命名放入 `vendor/` 目录供
+`scripts/deploy.sh vendor/` 使用。
+
 Pull with:
 
 ```sh

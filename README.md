@@ -15,6 +15,14 @@ PPSSPP against BaseOS's native SDL (see "Native way" below).
 **状态**：已在设备上部署运行。本仓库**仅供存档参考**——未来的正规路线是用
 BaseOS 原生 SDL 源码编译 PPSSPP（见下文"原生路线"）。
 
+**Scope / 范围**: tested on **one RG35XX-SP (RGSP, H700, BaseOS) only**.
+Same-family devices (RG35XX Plus/H/Pro, RG40XX, RG28XX, RG34XX, ...) are
+**unverified** — expect that this may or may not work on them.
+
+**范围**：仅在一台 **RG35XX-SP（RGSP、H700、BaseOS）** 上实测通过。
+同系列其他设备（RG35XX+/H/Pro、RG40XX、RG28XX、RG34XX 等）**未验证**，
+不保证有效。
+
 ---
 
 ## Why this exists / 为什么需要它
@@ -42,34 +50,51 @@ joysticks and all face buttons are dead. The fix ships four parts in
 src/fakeudev.c     The shim (builds to libudev.so.1) / 假 libudev 垫片源码
 src/jsdump.c       SDL joystick enumerator + live button reporter / 摇杆枚举与按键实测工具
 src/gctest.c       SDL_IsGameController probe (reconstructed) / 控制器识别探针（重建版）
+scripts/build.sh   Cross-compile shim + probes / 交叉编译垫片与探针
+scripts/deploy.sh  Assemble the pak lib stack and push to the device / 组装 pak lib 并推送设备
 scripts/launch.sh  PSP.pak launcher (reconstructed from verified behavior; refresh from device later) / pak 启动脚本（按实测行为重建，待真机核对）
 deploy/            Actual on-device config snapshot (pull from device) / 设备真实配置快照
 ```
 
 ## Usage / 使用方法
 
-### Build the shim / 编译垫片
+### Build / 编译
 
 ```sh
-aarch64-linux-gnu-gcc -shared -fPIC -O2 -o libudev.so.1 src/fakeudev.c -ldl
+./scripts/build.sh              # shim + probes -> build/
+# CROSS=... GLSTRESS_DIR=...    # override toolchain prefix / SDL source repo
+```
+
+This cross-compiles `libudev.so.1` from `src/fakeudev.c` (always) and the
+probes `jsdump`/`gctest` (when SDL headers/libs are found in `$GLSTRESS_DIR`,
+defaulting to the glstress repo). Raw command for reference:
+
+```sh
+aarch64-linux-gnu-gcc -shared -fPIC -O2 -o build/libudev.so.1 src/fakeudev.c -ldl
 ```
 
 Adjust `REAL_LIB` in the source to the deployed real libudev path.
-Adjust `REAL_LIB` 宏为设备上真实 libudev 的路径。
+编译 `libudev.so.1` 和探针；裸命令见上（参考用）。`REAL_LIB` 宏按设备上真实
+libudev 路径调整。
 
 ### Deploy / 部署
 
-Ship the four-part stack in the pak's `lib/` dir and prepend it to
-LD_LIBRARY_PATH in the pak launcher (see `deploy/README.md` for the pull
-commands and the on-device file locations). Runtime libs: SDL 2.0.12 +
-fake libudev + real libudev.so.1.7.2 + libasound.so.2; PPSSPP itself stays
-in `/mnt/sdcard/.system/h700/ppsspp/` with config at
-`/mnt/vendor/deep/ppsspp/PSP/SYSTEM/controls.ini`.
+```sh
+./scripts/deploy.sh vendor/ root@192.168.50.233
+# vendor/ holds the three stock-firmware artifacts (not in this repo):
+#   libSDL2-2.0.so.0 (SDL 2.0.12), libasound.so.2, libudev.so.1.7.2 (real)
+```
 
-四件套放入 pak 的 `lib/`，launcher 里把该目录前置到 LD_LIBRARY_PATH
-（拉取命令和设备路径见 `deploy/README.md`）。PPSSPP 本体在
-`/mnt/sdcard/.system/h700/ppsspp/`，配置在
-`/mnt/vendor/deep/ppsspp/PSP/SYSTEM/controls.ini`。
+The script builds the shim, assembles the four-part pak `lib/` (fake shim +
+the three stock artifacts), and pushes `lib/` + `scripts/launch.sh` to
+`/mnt/sdcard/Emus/h700/PSP.pak/` on the device; relaunch PSP from the menu
+afterwards. PPSSPP itself stays in `/mnt/sdcard/.system/h700/ppsspp/` with
+config at `/mnt/vendor/deep/ppsspp/PSP/SYSTEM/controls.ini` — see
+`deploy/README.md` for those file locations and the artifact origins.
+
+脚本会编译垫片、组装四件套 pak `lib/`（假垫片 + 三个官方固件产物）、把
+`lib/` 和 `scripts/launch.sh` 推送到设备的 `/mnt/sdcard/Emus/h700/PSP.pak/`，
+之后从菜单重新启动 PSP 即可。PPSSPP 本体与配置路径见 `deploy/README.md`。
 
 ### Probes / 探针
 
