@@ -13,6 +13,9 @@ PPSSPP in-game control options) — neither the adapter nor the stock binary
 adds it automatically. After a fresh restore from `PSP/BACK/` it is absent
 until the user re-enables it. Treat `PSP/BACK/` as the factory baseline;
 `SYSTEM/` drifts with user settings and normal runs (same for `ppsspp.ini`).
+Rationale: the RGSP has **no physical analog stick** — AxisSwap is bound to
+the **R2 button** (recorded as `AxisSwap = 10-4010`, pad channel) so the
+stick axes (driven by button mapping) can be swapped on demand per game.
 
 设备配置快照（2026-08-16 拉取）。**仅官方原样**——与官方固件（appfs
 `deep/ppsspp`）逐字节对照确认零修改；适配层的全部新增都在 `PSP.pak`
@@ -23,6 +26,9 @@ until the user re-enables it. Treat `PSP/BACK/` as the factory baseline;
 是**用户手动设置**（PPSSPP 游戏内控制选项里开启的）——适配层和官方二进制
 都不会自动添加。从 `PSP/BACK/` 恢复后该行消失，直到用户重新开启。
 `PSP/BACK/` 为出厂基线；`SYSTEM/` 随用户设置和正常运行变化（ppsspp.ini 同理）。
+用途：**设备无物理摇杆**，AxisSwap 绑定到 **R2 键**（记录为
+`AxisSwap = 10-4010`，手柄通道），让按键映射驱动的摇杆轴可按游戏需要
+随时交换。
 
 | File (this repo) | On-device source | Content |
 |---|---|---|
