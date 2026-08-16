@@ -2,16 +2,17 @@
 # deploy.sh - assemble the PSP.pak lib stack and push it to the device.
 #
 # Usage:
-#   ./scripts/deploy.sh [stage-dir] [device]
+#   ./scripts/deploy.sh <device> [stage-dir]
 #
-#   stage-dir: directory holding the stock-firmware artifacts (NOT in this
-#              repo — extract from the official firmware rootfs/appfs, or
-#              copy from the device's PSP.pak/lib). Required files:
-#                libSDL2-2.0.so.0     SDL 2.0.12 (soname-named)
-#                libasound.so.2       ALSA (SDL 2.0.12 dependency)
-#                libudev.so.1.7.2     real libudev (shim pass-through)
-#              Default: ./vendor
-#   device:    ssh target, default root@192.168.50.233
+#   device:     ssh target for YOUR device, e.g. root@192.168.1.50
+#               (required — no hardcoded IP; set the actual device IP)
+#   stage-dir:  directory holding the stock-firmware artifacts (NOT in this
+#               repo — extract from the official firmware rootfs/appfs, or
+#               copy from the device's PSP.pak/lib). Required files:
+#                 libSDL2-2.0.so.0     SDL 2.0.12 (soname-named)
+#                 libasound.so.2       ALSA (SDL 2.0.12 dependency)
+#                 libudev.so.1.7.2     real libudev (shim pass-through)
+#               Default: ./vendor
 #
 # What it does:
 #   1. builds the fake libudev shim (scripts/build.sh)
@@ -24,8 +25,9 @@
 # gamecontrollerdb entry — see deploy/README.md for those.
 set -e
 
-STAGE="${1:-vendor}"
-DEV="${2:-root@192.168.50.233}"
+[ $# -ge 1 ] || { echo "error: device required — usage: $0 <device> [stage-dir]"; exit 1; }
+DEV="$1"
+STAGE="${2:-vendor}"
 PAK_REMOTE="/mnt/sdcard/Emus/h700/PSP.pak"
 
 [ -d "$STAGE" ] || { echo "error: stage dir '$STAGE' not found"; exit 1; }

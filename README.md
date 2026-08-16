@@ -80,8 +80,10 @@ libudev 路径调整。
 ### Deploy / 部署
 
 ```sh
-./scripts/deploy.sh vendor/ root@192.168.50.233
-# vendor/ holds the three stock-firmware artifacts (not in this repo):
+./scripts/deploy.sh root@<your-device-ip>   # e.g. ./scripts/deploy.sh root@192.168.1.50
+# device is required — set YOUR device's actual IP (no hardcoded IP)
+# optional stage dir (default ./vendor) holds the three stock-firmware
+# artifacts (not in this repo):
 #   libSDL2-2.0.so.0 (SDL 2.0.12), libasound.so.2, libudev.so.1.7.2 (real)
 ```
 
