@@ -1,0 +1,7 @@
+# Stock-firmware binary artifacts pulled from the device (SDL 2.0.12,
+# libasound, real libudev, deployed shims) — not built from this repo.
+# See deploy/README.md for their origin and staging instructions.
+vendor/
+
+# Build output (shim + probes + assembled pak lib)
+build/

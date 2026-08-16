@@ -52,8 +52,8 @@ src/jsdump.c       SDL joystick enumerator + live button reporter / 摇杆枚举
 src/gctest.c       SDL_IsGameController probe (reconstructed) / 控制器识别探针（重建版）
 scripts/build.sh   Cross-compile shim + probes / 交叉编译垫片与探针
 scripts/deploy.sh  Assemble the pak lib stack and push to the device / 组装 pak lib 并推送设备
-scripts/launch.sh  PSP.pak launcher (reconstructed from verified behavior; refresh from device later) / pak 启动脚本（按实测行为重建，待真机核对）
-deploy/            Actual on-device config snapshot (pull from device) / 设备真实配置快照
+scripts/launch.sh  PSP.pak launcher (verbatim from the device, 2026-08-16) / pak 启动脚本（设备逐字版）
+deploy/            On-device config snapshot — official stock files only / 设备配置快照（仅官方原样）
 ```
 
 ## Usage / 使用方法
@@ -88,8 +88,8 @@ libudev 路径调整。
 The script builds the shim, assembles the four-part pak `lib/` (fake shim +
 the three stock artifacts), and pushes `lib/` + `scripts/launch.sh` to
 `/mnt/sdcard/Emus/h700/PSP.pak/` on the device; relaunch PSP from the menu
-afterwards. PPSSPP itself stays in `/mnt/sdcard/.system/h700/ppsspp/` with
-config at `/mnt/vendor/deep/ppsspp/PSP/SYSTEM/controls.ini` — see
+afterwards. PPSSPP itself stays in `/mnt/vendor/deep/ppsspp/` (official
+binary + assets) with config at `/mnt/vendor/deep/ppsspp/PSP/SYSTEM/` — see
 `deploy/README.md` for those file locations and the artifact origins.
 
 脚本会编译垫片、组装四件套 pak `lib/`（假垫片 + 三个官方固件产物）、把
