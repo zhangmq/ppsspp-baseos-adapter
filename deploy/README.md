@@ -7,23 +7,22 @@ own additions live exclusively in `PSP.pak` (`launch.sh` + `lib/`), never
 in the official data. A redundant `gamecontrollerdb.txt.bak` (identical
 content) was removed to restore the stock state.
 
-**Correction 2026-08-16 (verified on a fresh deploy run)**: the
-`AxisSwap = 10-4010` line in `PSP/SYSTEM/controls.ini` is **written by the
-official PPSSPP binary itself on first run** — it reappears automatically
-after every restore from `PSP/BACK/` and is stock firmware behavior, not an
-adapter modification. Treat `PSP/BACK/` as the factory baseline; `SYSTEM/`
-is expected to drift on every run (same for `ppsspp.ini` settings).
+**Note 2026-08-16**: the `AxisSwap = 10-4010` line in
+`PSP/SYSTEM/controls.ini` is a **user setting** (enabled manually in the
+PPSSPP in-game control options) — neither the adapter nor the stock binary
+adds it automatically. After a fresh restore from `PSP/BACK/` it is absent
+until the user re-enables it. Treat `PSP/BACK/` as the factory baseline;
+`SYSTEM/` drifts with user settings and normal runs (same for `ppsspp.ini`).
 
 设备配置快照（2026-08-16 拉取）。**仅官方原样**——与官方固件（appfs
 `deep/ppsspp`）逐字节对照确认零修改；适配层的全部新增都在 `PSP.pak`
 （`launch.sh` + `lib/`），从不写入官方数据。冗余的 `gamecontrollerdb.txt.bak`
 （内容相同）已移除恢复原样。
 
-**修正（2026-08-16，新部署运行验证）**：`PSP/SYSTEM/controls.ini` 里的
-`AxisSwap = 10-4010` 是**官方 PPSSPP 二进制首次运行自动写入的**——每次从
-`PSP/BACK/` 恢复后它都会自动重现，属官方固件行为，不是适配层修改。
-`PSP/BACK/` 才是出厂基线；`SYSTEM/` 每次运行都会被官方二进制正常写回
-（ppsspp.ini 设置同理）。
+**备注（2026-08-16）**：`PSP/SYSTEM/controls.ini` 里的 `AxisSwap = 10-4010`
+是**用户手动设置**（PPSSPP 游戏内控制选项里开启的）——适配层和官方二进制
+都不会自动添加。从 `PSP/BACK/` 恢复后该行消失，直到用户重新开启。
+`PSP/BACK/` 为出厂基线；`SYSTEM/` 随用户设置和正常运行变化（ppsspp.ini 同理）。
 
 | File (this repo) | On-device source | Content |
 |---|---|---|
