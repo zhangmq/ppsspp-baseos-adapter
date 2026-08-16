@@ -5,7 +5,7 @@ directory gets a snapshot of each once the device is next reachable:
 
 | File (this repo) | On-device source | Content |
 |---|---|---|
-| `launch.sh` | `/mnt/sdcard/Emus/h700/PSP.pak/launch.sh` | pak launcher: PAK_DIR lib first in LD_LIBRARY_PATH, HOME=/mnt/mmc, `cd /mnt/vendor/deep/ppsspp && exec ./PPSSPPSDL "$ROM" > $LOGS_PATH/PSP.txt` |
+| `launch.sh` | `/mnt/sdcard/Emus/h700/PSP.pak/launch.sh` | pak launcher — maintained as `../scripts/launch.sh` (reconstructed 2026-08-16); pull the on-device copy verbatim here to re-sync |
 | `controls.ini` | `/mnt/vendor/deep/ppsspp/PSP/SYSTEM/controls.ini` | `[ControlMapping]` with device ids 1=keyboard / 10=pad, NKCODE values (DPAD 19-22, BUTTON_1..10=188-197); the pad channel lines (`10-189/190/188/191` = Circle/Cross/Triangle/Square) are the working face-button bindings |
 | `gamecontrollerdb.txt` | `/mnt/sdcard/.system/h700/ppsspp/assets/gamecontrollerdb.txt` | official entry for GUID `19000000010000000100000000010000`: `a:b1,b:b0,x:b2,y:b3,...` (SDL 2.0.12 gamepad-order indices) |
 | `lib/` | `/mnt/sdcard/Emus/h700/PSP.pak/lib/` | libSDL2-2.0.so.0 (2.0.12), libudev.so.1 (built from `src/fakeudev.c`), libudev.so.1.7.2 (real), libasound.so.2 |

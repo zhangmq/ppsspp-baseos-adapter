@@ -42,6 +42,7 @@ joysticks and all face buttons are dead. The fix ships four parts in
 src/fakeudev.c     The shim (builds to libudev.so.1) / 假 libudev 垫片源码
 src/jsdump.c       SDL joystick enumerator + live button reporter / 摇杆枚举与按键实测工具
 src/gctest.c       SDL_IsGameController probe (reconstructed) / 控制器识别探针（重建版）
+scripts/launch.sh  PSP.pak launcher (reconstructed from verified behavior; refresh from device later) / pak 启动脚本（按实测行为重建，待真机核对）
 deploy/            Actual on-device config snapshot (pull from device) / 设备真实配置快照
 ```
 
