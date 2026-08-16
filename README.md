@@ -101,6 +101,43 @@ NKCODE values). This repo then serves as the behavior reference only.
 索引的 gamecontrollerdb 条目和 controls.ini 规范（设备号 1=键盘、10=手柄、
 NKCODE 码）。本仓库此后仅作行为参考。
 
+## How NextUI registers & launches emulators / NextUI 模拟器注册与启动机制
+
+How PSP.pak (and any emulator pak) gets into the menu and runs a game —
+verified on the device / from the NextUI h700 source:
+
+PSP.pak（以及任何模拟器 pak）如何出现在菜单并启动游戏——设备实测 + NextUI
+h700 源码确认：
+
+1. **Roms folder naming decides the pak**: a folder `Roms/<Name> (XXX)/` maps
+   to `Emus/h700/XXX.pak/launch.sh`. For PSP the folder is
+   `Roms/PlayStation Portable (PSP)/` → `PSP.pak`; the game ROM is passed to
+   the launcher as `$1`.
+   **ROM 目录后缀决定 pak**：`Roms/<Name> (XXX)/` 对应
+   `Emus/h700/XXX.pak/launch.sh`。PSP 的目录是 `Roms/PlayStation Portable (PSP)/`
+   → `PSP.pak`；游戏 ROM 作为 `$1` 传给 launcher。
+2. **Launch protocol**: the menu writes the pak command to `/tmp/next` and
+   exits with code 0; the session loop (`MinUI.pak/launch.sh` in
+   `.system/h700/paks/`) evals it — the frontend stays down while the app
+   runs, then restarts. The session loop exports the environment
+   (LD_LIBRARY_PATH with `.system/h700/lib` first, `SDL_VIDEODRIVER=mali`,
+   HOME, SDCARD_PATH, ...).
+   **启动协议**：菜单把 pak 命令写入 `/tmp/next` 并以退出码 0 退出；会话循环
+   （`.system/h700/paks/MinUI.pak/launch.sh`）eval 该命令——应用运行期间前端
+   保持关闭，退出后前端重启。会话环境由循环导出（LD_LIBRARY_PATH 前置
+   `.system/h700/lib`、`SDL_VIDEODRIVER=mali`、HOME、SDCARD_PATH 等）。
+3. **Operational warning**: the session loop counts non-zero frontend exits
+   and powers the device off after 5 ("crash limit reached"). Never kill
+   nextui.elf directly — always launch apps through the menu's `/tmp/next`
+   flow.
+   **操作警告**：会话循环统计前端非零退出次数，5 次即关机
+   （"crash limit reached"）。切勿直接杀 nextui.elf——必须走菜单的
+   `/tmp/next` 协议启动应用。
+4. **Tools** (apps without ROMs, e.g. stress tools): `Tools/<name>/<Name>.pak/launch.sh`,
+   launched from the menu without arguments.
+   **工具类**（无 ROM 的应用，如压测工具）：`Tools/<name>/<Name>.pak/launch.sh`，
+   菜单启动不带参数。
+
 ## Related projects / 相关项目
 
 | Project / 项目 | URL | Role / 角色 |
