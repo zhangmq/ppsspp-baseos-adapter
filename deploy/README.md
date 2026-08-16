@@ -41,14 +41,17 @@ stick axes (driven by button mapping) can be swapped on demand per game.
 The three stock artifacts are **not in this repo** — they live in the
 gitignored `vendor/` dir (mirrored from the device / official firmware
 rootfs). Name them by soname so `scripts/deploy.sh <device> vendor/` picks
-them up (device = your device's ssh target, required).
+them up (device = your device's ssh target, required). **How to obtain
+them from the stock firmware (exact partition + path per file) is
+documented in the main README, section "Obtaining the stock files".**
 `vendor/deep-ppsspp/` is the full official PPSSPP tree (binary + assets +
 PSP/SYSTEM + PSP/BACK + old/) and `vendor/memstick-ppsspp/` the memstick
 (saves/cheats/states) — both gitignored, kept for reference and restore.
 
 三个官方固件产物**不在本仓库**，位于 gitignored 的 `vendor/`（设备/官方
 固件 rootfs 镜像，按 soname 命名供 `scripts/deploy.sh <device> vendor/`
-使用，device 填你自己设备的 ssh 目标）。
+使用，device 填你自己设备的 ssh 目标）。**每个文件在官方固件的确切
+分区与路径，见主 README"获取官方文件"章节。**
 `vendor/deep-ppsspp/` = 官方 PPSSPP 整树（二进制 + assets + PSP/SYSTEM +
 PSP/BACK + old/），`vendor/memstick-ppsspp/` = memstick（存档/金手指/状态），
 均 gitignored，供参考与恢复。

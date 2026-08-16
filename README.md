@@ -70,6 +70,43 @@ aarch64-linux-gnu-gcc -shared -fPIC -O2 -o build/libudev.so.1 src/fakeudev.c -ld
 `lib/` 和 `scripts/launch.sh` 推送到设备的 `/mnt/sdcard/Emus/h700/PSP.pak/`，
 之后从菜单重新启动 PSP 即可。PPSSPP 本体与配置路径见 `deploy/README.md`。
 
+## 获取官方文件
+
+所有官方产物取自 **Anbernic 官方固件卡**（16G，dmenu 固件，插读卡器即可
+只读挂载），分区布局：
+
+- **p5 `linuxrootfs`**（ext4，Ubuntu 22.04 rootfs）：SDL 2.0.12、libasound、libudev
+- **p6 `appfs`**（ext4，官方系统里挂载为 `/mnt/vendor`）：官方 PPSSPP 整树
+
+| 文件 | 官方固件位置 | 说明 |
+|---|---|---|
+| `PPSSPPSDL` + `assets/` + `old/` + `PSP/` | p6 `appfs/deep/ppsspp/` | 官方 PPSSPP 整树；`PSP/BACK/` 是出厂配置基线，`PSP/SYSTEM/` 随运行变化 |
+| `libSDL2-2.0.so.0` | p5 `/usr/lib/libSDL2-2.0.so.0.12.0` | 官方 PSP 的 SDL 2.0.12（按 soname 命名） |
+| `libasound.so.2` | p5 `/usr/lib/aarch64-linux-gnu/libasound.so.2` | SDL 2.0.12 的 ALSA 依赖 |
+| `libudev.so.1.7.2` | p5 `/usr/lib/aarch64-linux-gnu/libudev.so.1.7.2` | 真 libudev（垫片透传目标）；宿主机同版本亦可 |
+| `gamecontrollerdb.txt` | 随 `deep/ppsspp` 的 `assets/` | 官方自带 ANBERNIC-keys 条目（含 2.0.12 手柄序索引） |
+| memstick（存档） | 设备 `/mnt/mmc/.config/ppsspp` | 运行数据，**非官方固件自带**，从设备 scp |
+
+⚠️ **不要混用**：p5 `/usr/lib/aarch64-linux-gnu/` 下的
+`libSDL2-2.0.so.0.2800.5`（2.28.5）是 dmenu 系统的 SDL，不是 PSP 用的
+2.0.12——官方 PSP 的 SDL 在 `/usr/lib/`（`libSDL2-2.0.so.0.12.0`）。
+
+获取示例（官方固件卡插读卡器，`sdX` 为实际设备节点）：
+
+```sh
+udisksctl mount -b /dev/sdX5 -o ro   # linuxrootfs（SDL / asound / udev）
+udisksctl mount -b /dev/sdX6 -o ro   # appfs（PPSSPP 整树）
+mkdir -p vendor
+cp /run/media/$USER/linuxrootfs/usr/lib/libSDL2-2.0.so.0.12.0 vendor/libSDL2-2.0.so.0
+cp /run/media/$USER/linuxrootfs/usr/lib/aarch64-linux-gnu/libasound.so.2 vendor/
+cp /run/media/$USER/linuxrootfs/usr/lib/aarch64-linux-gnu/libudev.so.1.7.2 vendor/
+cp -r /run/media/$USER/appfs/deep/ppsspp vendor/deep-ppsspp
+scp -r root@<设备IP>:/mnt/mmc/.config/ppsspp vendor/memstick-ppsspp/   # memstick 从设备取
+```
+
+三个库文件按 soname 命名放入 `vendor/` 后，`./scripts/deploy.sh <device>` 即
+可组装部署。
+
 ### 探针
 
 ```sh

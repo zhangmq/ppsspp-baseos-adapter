@@ -80,6 +80,45 @@ afterwards. PPSSPP itself stays in `/mnt/vendor/deep/ppsspp/` (official
 binary + assets) with config at `/mnt/vendor/deep/ppsspp/PSP/SYSTEM/` — see
 `deploy/README.md` for those file locations and the artifact origins.
 
+## Obtaining the stock files
+
+Everything official comes from the **Anbernic stock firmware card** (16 GB,
+dmenu firmware — mount read-only via a card reader). Partition layout:
+
+- **p5 `linuxrootfs`** (ext4, Ubuntu 22.04 rootfs): SDL 2.0.12, libasound, libudev
+- **p6 `appfs`** (ext4, mounted as `/mnt/vendor` on the stock system): the
+  official PPSSPP tree
+
+| File | Location in stock firmware | Notes |
+|---|---|---|
+| `PPSSPPSDL` + `assets/` + `old/` + `PSP/` | p6 `appfs/deep/ppsspp/` | the official PPSSPP tree; `PSP/BACK/` is the factory config baseline, `PSP/SYSTEM/` drifts on runs |
+| `libSDL2-2.0.so.0` | p5 `/usr/lib/libSDL2-2.0.so.0.12.0` | the stock PSP's SDL 2.0.12 (name it by soname) |
+| `libasound.so.2` | p5 `/usr/lib/aarch64-linux-gnu/libasound.so.2` | ALSA dependency of SDL 2.0.12 |
+| `libudev.so.1.7.2` | p5 `/usr/lib/aarch64-linux-gnu/libudev.so.1.7.2` | real libudev (shim pass-through target); a host distro's same version also works |
+| `gamecontrollerdb.txt` | inside `deep/ppsspp` `assets/` | stock db already contains the ANBERNIC-keys entry (2.0.12 gamepad-order indices) |
+| memstick (saves) | device `/mnt/mmc/.config/ppsspp` | runtime data, **not in the stock firmware** — copy from the device via scp |
+
+⚠️ **Do not mix up**: the `libSDL2-2.0.so.0.2800.5` (2.28.5) under p5
+`/usr/lib/aarch64-linux-gnu/` is the dmenu system's SDL, not the PSP's
+2.0.12 — the stock PSP SDL lives in `/usr/lib/`
+(`libSDL2-2.0.so.0.12.0`).
+
+Example (stock firmware card in a reader, `sdX` = actual device node):
+
+```sh
+udisksctl mount -b /dev/sdX5 -o ro   # linuxrootfs (SDL / asound / udev)
+udisksctl mount -b /dev/sdX6 -o ro   # appfs (PPSSPP tree)
+mkdir -p vendor
+cp /run/media/$USER/linuxrootfs/usr/lib/libSDL2-2.0.so.0.12.0 vendor/libSDL2-2.0.so.0
+cp /run/media/$USER/linuxrootfs/usr/lib/aarch64-linux-gnu/libasound.so.2 vendor/
+cp /run/media/$USER/linuxrootfs/usr/lib/aarch64-linux-gnu/libudev.so.1.7.2 vendor/
+cp -r /run/media/$USER/appfs/deep/ppsspp vendor/deep-ppsspp
+scp -r root@<device-ip>:/mnt/mmc/.config/ppsspp vendor/memstick-ppsspp/   # memstick from the device
+```
+
+Once the three libs sit in `vendor/` named by soname,
+`./scripts/deploy.sh <device>` can assemble and deploy.
+
 ### Probes
 
 ```sh
